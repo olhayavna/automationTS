@@ -32,7 +32,11 @@ export default class ContactUsPage {
 
     async selectUploadFile(filePath:string): Promise<void> {
         await this.uploadFile.setInputFiles(filePath);
-        await this.page.waitForTimeout(500); // give the site's JS a moment to process the file "change" event before Submit is clicked
+        // The Contact Us <form> has no enctype="multipart/form-data", so the real file content
+        // never reaches the server anyway (only the filename is sent) — but the site's own JS
+        // still needs a moment to react to the file input's "change" event before Submit is
+        // clicked, or the success message sometimes fails to render. Verified via network trace.
+        await this.page.waitForTimeout(500);
     }
 
     async selectSubmitButton(): Promise<void> {
